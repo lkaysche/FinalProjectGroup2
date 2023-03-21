@@ -1,18 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
+using UnityEngine.Video;
 using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
     [SerializeField] private int gameState;
-    private int previousGameState;
+    [SerializeField] private int previousGameState;
     public static GameController instance;
     public int score = 0;
     public GameObject gameHud;
     public GameObject title;
     public GameObject endUI;
     public GameObject winUI;
+    public bool movieOver;
 
     private void Awake()
     {
@@ -35,6 +37,7 @@ public class GameController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
         if (gameState == 0)
         {
             if (previousGameState != 0)
@@ -51,8 +54,13 @@ public class GameController : MonoBehaviour
             if (previousGameState != 1)
             {
                 title.SetActive(false);
-                gameHud.SetActive(true);
+                //gameHud.SetActive(true);
                 previousGameState = 1;
+            }
+            if (movieOver == true)
+            {
+                Debug.Log("Scene Change");
+                LoadHouse();
             }
         }
         else if (gameState == -1)
@@ -81,6 +89,14 @@ public class GameController : MonoBehaviour
 
     public void StartGame()
     {
+        gameState = 1;
+        GameObject.Find("Main Camera").GetComponent<VideoPlayer>().Play();
+        GameObject.Find("Main Camera").GetComponent<CutScene>().playing = true;
+    }
+
+    public void LoadHouse()
+    {
+        movieOver = false;
         Debug.Log("Game Started");
         SceneManager.LoadScene("HouseLevel");
         SceneManager.sceneLoaded += OnSceneLoaded;
@@ -115,6 +131,7 @@ public class GameController : MonoBehaviour
         if (previousGameState == 0)
         {
             gameState = 1;
+            movieOver = false;
         }
     }
 }
